@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <style>
+        .box {
+            width: 500px;
+            margin: 0 auto;
+            height: 500px;
+            text-align: right;
+        }
+
+        form {
+            margin-top: 200px;
+            float: right;
+        }
+
+        textarea {
+            width: 100px;
+            height: 20px;
+        }
+    </style>
+
+</head>
+
+
+<body>
+<div class="box">
+    <font size="6" color="#00FF00" style="font-weight:bold;font-style:italic;">Welcome to Mocker Server</font>
+
+
+    <form method="post" action="/page">
+        <span>请选择数据类型:</span>
+        <input type="text" list="url_list" name="text"/>
+        <input type="submit"/>
+        <datalist id="url_list" name="data">
+            <option label="1" value="Card Data" name="card"/>
+            <option label="2" value="Feed Data" name="feed"/>
+            <option label="3" value="Other Data" name="other"/>
+        </datalist>
+        <br>
+        <h4>Author :Cloud,JinhaiDou</h4>
+        <h4>Consultant :LiangXu</h4>
+        <div>给个标记老铁: <textarea name="tag"></textarea></div>
+    </form>
+</div>
+
+
+</body>
+
+
+</html>
