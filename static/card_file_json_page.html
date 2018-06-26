@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    pre {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .string {
+        color: green;
+    }
+
+    .number {
+        color: darkorange;
+    }
+
+    .boolean {
+        color: blue;
+    }
+
+    .null {
+        color: magenta;
+    }
+
+    .key {
+        color: red;
+    }
+
+    textarea {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+        width: 100%;
+        height: 300px
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/card_file.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+</head>
+<script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+    function syntaxHighlight(json) {
+        if (typeof json != 'string') {
+            json = JSON.stringify(json, undefined, 2);
+        }
+        json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            var cls = 'number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'key';
+                } else {
+                    cls = 'string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'boolean';
+            } else if (/null/.test(match)) {
+                cls = 'null';
+            }
+            return '<span class="' + cls + '">' + match + '</span>';
+        });
+    }
+</script>
+<script>
+    {
+        var data = '{\n' +
+            '     \n' +
+            ' \n' +
+            '"people":[\n' +
+            '         \n' +
+            ' \n' +
+            '{\n' +
+            ' \n' +
+            '"firstName": "Brett",\n' +
+            '             \n' +
+            '"lastName":"McLaughlin"\n' +
+            '         \n' +
+            '},\n' +
+            '         \n' +
+            ' \n' +
+            '{\n' +
+            '             \n' +
+            '"firstName":"Jason",\n' +
+            ' \n' +
+            '"lastName":"Hunter"\n' +
+            ' \n' +
+            ' \n' +
+            '}\n' +
+            ' \n' +
+            ' \n' +
+            ' \n' +
+            ']\n' +
+            ' \n' +
+            '}'
+
+        function preview() {
+            var text = $("#result").val();
+            document.getElementById("preresult").innerHTML = (syntaxHighlight(text));
+        }
+
+        function edit() {
+            document.getElementById("result").innerHTML = data;
+        }
+
+        /*function save() {
+            data = document.getElementById("result").innerHTML;
+        }*/
+        function getJsonError(json) {
+
+        }
+
+        function upload() {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "/commit",//url
+                data: $('#form1').serialize(),
+                success: function (result) {
+                    console.log(result);//打印服务端返回的数据(调试用)
+                    if (result.resultCode == 200) {
+                        document.getElementById("url").innerHTML = result.value;
+                        ;//要刷新的div
+                    }
+                },
+                error: function () {
+                    alert("异常！");
+                }
+            });
+        }
+
+        function save() {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "/save",//url/?url="+$("#url").html
+                data: $('#form1').serialize(),
+                success: function (result) {
+                    console.log(result);//打印服务端返回的数据(调试用)
+                    if (result.resultCode == 200) {
+                        alert("修改成功！");
+                        document.getElementById("url").innerHTML = result.value;
+                    }
+                    ;
+                },
+                error: function () {
+                    alert("异常！");
+                }
+            });
+        }
+
+
+        /**
+         * 加载图片，将图片拼成html代码
+         * @param SJ_CODE 事件编号
+         */
+        function loadPicFormDB(data) {
+            var pichtml = "";
+            for (var i = 0; i < data.length; i++) {
+                var src =data[i];
+
+                var html1 = '<li><a  href="file:///' + src + '" rel="lightbox" title="' + data[i] + '" target="_blank">'
+                    + '</a><span>' + data[i] + '</span></li>';
+//'<img onload="AutoResizeImage(800,450,this)" src="' + src + '">
+                pichtml += html1;
+                //scrollPic();
+            }
+            ;
+            return pichtml
+      //      showPicDetail(pichtml);//展示图片（此代码省略,直接给个div或者弹窗就可以了）
+
+        }
+
+        /**
+         * 按比例缩小图片
+         * @param maxWidth
+         * @param maxHeight
+         * @param objImg
+         * @constructor
+         */
+        function AutoResizeImage(maxWidth, maxHeight, objImg) {
+            var img = new Image();
+            img.src = objImg.src;
+            var hRatio;
+            var wRatio;
+            var Ratio = 1;
+            var w = img.width;
+            var h = img.height;
+            wRatio = maxWidth / w;
+            hRatio = maxHeight / h;
+            if (maxWidth == 0 && maxHeight == 0) {
+                Ratio = 1;
+            } else if (maxWidth == 0) { //
+                if (hRatio < 1)
+                    Ratio = hRatio;
+            } else if (maxHeight == 0) {
+                if (wRatio < 1)
+                    Ratio = wRatio;
+            } else if (wRatio < 1 || hRatio < 1) {
+                Ratio = (wRatio <= hRatio ? wRatio : hRatio);
+            }
+            if (Ratio < 1) {
+                w = w * Ratio;
+                h = h * Ratio;
+            }
+            objImg.height = h;
+            objImg.width = w;
+        }
+        function lookupCardFile() {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "GET",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "/searchcardfile",//url/?url="+$("#url").html
+                data: $('#cardfileform').serialize(),
+                success: function (result) {
+                    console.log(result);//打印服务端返回的数据(调试用)
+                    if (result.resultCode == 200) {
+                        alert("修改成功！");
+                        previewRoot = document.getElementById("prefile");
+                       /* for (var i = 0; i < result.l.length; i++) {
+                            var element = document.createElement("p");
+                            var node = document.createTextNode("<>添加新段落");
+                        }*/
+                        var element = document.createElement("p");
+                        var node = document.createTextNode(loadPicFormDB(result.value));
+                        previewRoot.appendChild(element)
+                      // document.getElementById('prefile').innerHTML= loadPicFormDB(result.value)//'// result.value;
+                    }
+                    ;
+                },
+                error: function () {
+                    alert("异常！");
+                }
+            });
+        }
+    }
+
+</script>
+<body>
+    <div class="header">
+
+
+    </div>
+    <div class="card_file">
+        <div class="left">
+            <div class="menu">功能</div>
+            <div><input type="button" value="编辑与保存" @click="editSaveHandler"></div>
+            <div><input type="button" value="文件操作" @click="fileOperateHandler"></div>
+        </div>
+        <div class="right">
+            <div class="edit" v-if="isEdit">
+                <form method='post' charset="utf-8" name="card" id="form1">
+                    <div class="edit-title">
+                        请输入card数据
+                    </div>
+                    <div class="edit-edit-rigion">
+                        编辑区域
+                        <textarea id="result" name="editspace">
+
+                         </textarea>
+                    </div>
+
+                    <div class="edit-preview">
+                        预览区域
+                        <pre id="preresult" name="prespace">
+
+                        </pre>
+                    </div>
+                </form>
+                <div class="edit-footer">
+                    <button onclick="upload()"> 上传</button>
+                    <button onclick="preview()"> 预览</button>
+                    <button onclick="save()"> 保存2</button>
+
+                    当前资源对应的URL<textarea id="url" style="width:800px;height: 20px" ></textarea>
+                </div>
+            </div>
+            <div class="file" v-if="isFile">
+                <div class="file-title">
+                    请输入文件数据
+                </div>
+                <div class="file-edit-rigion">
+                    编辑区域
+                </div>
+                <div class="file-preview" id="prefile">
+
+                </div>
+                <div class="file-footer">
+                    <input name="avatar" id='upfile' type='file'/>
+                    <button onclick="fileupload()"> 上传</button>
+                    <button onclick="preview()"> 预览</button>
+                    <button onclick="save()"> 保存</button>
+                    <form method='get' charset="utf-8" name="cardfile" id="cardfileform">
+                        <button onclick="lookupCardFile()"> 查看服务器资源</button>
+                    </form>
+                    当前资源对应的URL<textarea id="fileurl" style="width:800px;height: 20px" ></textarea>
+                    <div id="cardfile">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/card_file.js"></script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    pre {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .string {
+        color: green;
+    }
+
+    .number {
+        color: darkorange;
+    }
+
+    .boolean {
+        color: blue;
+    }
+
+    .null {
+        color: magenta;
+    }
+
+    .key {
+        color: red;
+    }
+
+    textarea {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+        width: 100%;
+        height: 300px
+    }
+
+    #url {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+        width: 100%;
+        height: 20px
+    }
+</style>
+<link type="text/css" href="css/jsonFormater.css" rel="stylesheet"/>
+<script type="text/javascript" src="js/jsonFormater.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "微软雅黑";
+        font-size: 12px;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    table .tdLeft {
+        width: 150px;
+        text-align: right;
+        line-height: 30px;
+    }
+
+    table .tdRight {
+        width: 400px;
+    }
+
+    table textarea {
+        width: 400px;
+        height: 100px;
+    }
+
+    #container {
+        margin-left: 150px;
+    }
+</style>
+
+<!--<script>
+      用于以后优化json展示的体验
+    function showJson(){
+        $('table #container').css('display','block');
+        var options = {
+            dom: '#container' //对应容器的css选择器
+        };
+        var jf = new JsonFormater(options); //创建对象
+        jf.doFormat($("#jsonContent").val()); //格式化json
+    };
+</script>-->
+<script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+    function syntaxHighlight(json) {
+        if (typeof json != 'string') {
+            json = JSON.stringify(json, undefined, 2);
+        }
+        json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            var cls = 'number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'key';
+                } else {
+                    cls = 'string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'boolean';
+            } else if (/null/.test(match)) {
+                cls = 'null';
+            }
+            return '<span class="' + cls + '">' + match + '</span>';
+        });
+    }
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<script>
+    {
+        var data = '{\n' +
+            '     \n' +
+            ' \n' +
+            '"people":[\n' +
+            '         \n' +
+            ' \n' +
+            '{\n' +
+            ' \n' +
+            '"firstName": "Brett",\n' +
+            '             \n' +
+            '"lastName":"McLaughlin"\n' +
+            '         \n' +
+            '},\n' +
+            '         \n' +
+            ' \n' +
+            '{\n' +
+            '             \n' +
+            '"firstName":"Jason",\n' +
+            ' \n' +
+            '"lastName":"Hunter"\n' +
+            ' \n' +
+            ' \n' +
+            '}\n' +
+            ' \n' +
+            ' \n' +
+            ' \n' +
+            ']\n' +
+            ' \n' +
+            '}'
+
+        function preview() {
+            var text = $("#result").val();
+            document.getElementById("preresult").innerHTML = (syntaxHighlight(text));
+        }
+
+        function edit() {
+            document.getElementById("result").innerHTML = data;
+        }
+
+        /*function save() {
+            data = document.getElementById("result").innerHTML;
+        }*/
+        function getJsonError(json) {
+            
+        }
+
+        function upload() {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "/commit",//url
+                data: $('#form1').serialize(),
+                success: function (result) {
+                    console.log(result);//打印服务端返回的数据(调试用)
+                    if (result.resultCode == 200) {
+                        document.getElementById("url").innerHTML = result.value;
+                        ;//要刷新的div
+                    }
+                },
+                error: function () {
+                    alert("异常！");
+                }
+            });
+        }
+
+        function save() {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "/save",//url/?url="+$("#url").html
+                data: $('#form1').serialize(),
+                success: function (result) {
+                    console.log(result);//打印服务端返回的数据(调试用)
+                    if (result.resultCode == 200) {
+                        alert("修改成功！");
+                        document.getElementById("url").innerHTML = result.value;
+                    }
+                    ;
+                },
+                error: function () {
+                    alert("异常！");
+                }
+            });
+        }
+    }
+
+</script>
+<body>
+
+
+<!--
+action='/save'
+-->
+<button onclick="edit()">编辑</button>
+<button onclick="preview()">预览</button>
+<form method='post' charset="utf-8" name="card" id="form1">
+
+    <div>当前数据生成的url：
+        <textarea id="url" name="urlresult">waiting for url...</textarea>
+    </div>
+    <textarea id="result" name="editspace">
+
+    </textarea>
+    <pre id="preresult" name="prespace">
+
+    </pre>
+    <input type='button' onclick="upload()" value='Card提交'/>
+
+
+
+
+    <input type='button' onclick="save()" value='保存'/>
+
+</form>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/feed_file.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+</head>
+<body>
+    <div class="header">
+
+    </div>
+    <div class="feed_file">
+        <div class="left">
+            <div class="menu">功能</div>
+            <div><input type="button" value="编辑与保存" @click="editSaveHandler"></div>
+            <div><input type="button" value="文件操作" @click="fileOperateHandler"></div>
+        </div>
+        <div class="right">
+            <div class="edit" v-if="isEdit">
+                <div class="edit-title">
+                    请输入feed数据
+                </div>
+                <div class="edit-edit-rigion">
+                    编辑区域
+                </div>
+                <div class="edit-preview">
+                    预览区域
+                </div>
+                <div class="edit-footer">
+                    <button> 上传</button>
+                    <button> 修改</button>
+                    <!--<button> 保存</button>-->
+                    当前资源对应的URL<input style="width:200px">
+                </div>
+            </div>
+            <div class="file" v-if="isFile">
+                <div class="file-title">
+                    请输入文件数据
+                </div>
+                <div class="file-edit-rigion">
+                    编辑区域
+                </div>
+                <div class="file-preview">
+                    预览区域
+                </div>
+                <div class="file-footer">
+                    <button> 上传</button>
+                    <button> 修改</button>
+                    <button> 保存</button>
+                    当前资源对应的URL<input style="width:200px">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/feed_file.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+</html>
